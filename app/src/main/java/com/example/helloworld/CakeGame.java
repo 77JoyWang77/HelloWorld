@@ -15,7 +15,7 @@ import javafx.scene.input.*;
 import javafx.geometry.*;
 import javafx.animation.*;
 
-public class CakeGame extends Application {
+public class CakeGame extends Application {//I'm Joyce
 
 
     final int x_max = 5;
