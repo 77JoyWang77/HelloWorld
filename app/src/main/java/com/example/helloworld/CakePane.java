@@ -63,10 +63,7 @@ public class CakePane extends StackPane {
                 whole_cake.add(new Label(" "), position[i][0] + 2, position[i][1] + 5);
             }
         }
-
-        if(pieces.size() == 8) {
-            full();
-        }
+        full();
     }
 
     public void erase_piece(int p) {
@@ -85,14 +82,16 @@ public class CakePane extends StackPane {
 
 
 
-    public void put_cake_to_table(CakePane plate) {
-        if(plate.getPieces().size() > 0) {
+    public void put_cake_to_table(CakePane[][] cakes, int x, int y) {
+        if(cakes[x][y].getPieces().size() > 0) {
             return;
         }
 
         for(int i=0;i<getPieces().size();i++) {
-            plate.place_piece(getPieces().get(i));
+            cakes[x][y].place_piece(getPieces().get(i));
         }
+
+        cakes[x][y].mix(cakes, x, y);
     }
 
 
@@ -100,19 +99,18 @@ public class CakePane extends StackPane {
 
     public void mix(CakePane[][] cakes, int x, int y) {
 
-        for(int i=0;i<pieces_kind;i++) {
-            String mode = situation(cakes, x, y, i)[0];
-            int place = Integer.parseInt(situation(cakes, x, y, i)[1]);
+        PiecesPlace P = new PiecesPlace(cakes, x, y);
 
-            if(mode.equals("empty")) {
+        for(int i=0;i<5;i++) {
 
-                place_piece(cakes, x + dir[place][0], y + dir[place][1], i, -1);
+            cakes[x + dir[i][0]][y + dir[i][1]].clearPieces();
 
+            for(int p : P.getCake_dir(i).getPieces()) {
+                cakes[x + dir[i][0]][y + dir[i][1]].place_piece(p);
             }
-            else {
 
-            }
         }
+
     }
 
 
@@ -120,9 +118,9 @@ public class CakePane extends StackPane {
 
 
 
-    public void place_piece(CakePane[][] cakes, int x, int y, int p, int from) {
+    public void place_pieces(CakePane[][] cakes, int x, int y, int p, int from) {
         for(int i=0;i<4;i++) {	//上左下右
-            if(i != -1 && i == (from + 2) % 4) {
+            if(from != -1 && i == (from + 2) % 4) {
                 continue;
             }
 
@@ -133,7 +131,7 @@ public class CakePane extends StackPane {
                     break;
                 }
 
-                place_piece(cakes, x + dir[i][0], y + dir[i][1], p, i);
+                place_pieces(cakes, x + dir[i][0], y + dir[i][1], p, i);
 
                 move(cakes[x][y], cakes[x + dir[i][0]][y + dir[i][1]], p);
             }
@@ -142,34 +140,21 @@ public class CakePane extends StackPane {
 
 
 
+    public int count_dir(CakePane[][] cakes, int x, int y, int p) {
+        int count = 0;
 
-
-
-
-
-
-
-
-    public String[] situation(CakePane[][] cakes, int x, int y, int p) {
-        String[] result = {"","-1"};
         for(int i=0;i<5;i++) {
-            if(cakes[x + dir[i][0]][y + dir[i][1]].getPieces().size() > 0 && cakes[x + dir[i][0]][y + dir[i][1]].getPieces().size() == cakes[x + dir[i][0]][y + dir[i][1]].getPiecesNum(p)) {
-                result[0] = "empty";
-                result[1] = Integer.toString(i);
-
-                return result;
-            }
+            count += cakes[x + dir[i][0]][y + dir[i][1]].getPiecesNum(p);
         }
-        return result;
+
+        return count;
     }
-
-
-
 
     public void full() {
         if(pieces.size() == pieces_max) {
             clearPieces();
             circle.setFill(Color.BLUE);
+
             EventHandler<ActionEvent> eventHandler = e -> {
                 if(circle.getFill() != Color.BLUE) {
                     circle.setFill(Color.BLUE);
@@ -178,6 +163,7 @@ public class CakePane extends StackPane {
                     circle.setFill(Color.WHITE);
                 }
             };
+
             Timeline animation = new Timeline(new KeyFrame(Duration.millis(500), eventHandler));
             animation.setCycleCount(1);
             animation.play();

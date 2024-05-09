@@ -15,7 +15,7 @@ import javafx.scene.input.*;
 import javafx.geometry.*;
 import javafx.animation.*;
 
-public class CakeGame extends Application {//I'm Joyce
+public class CakeGame extends Application {
 
 
     final int x_max = 5;
@@ -116,8 +116,7 @@ public class CakeGame extends Application {//I'm Joyce
 
             new_cakes[a].setOnMouseClicked(event -> {
                 if(index[0] != -1) {
-                    new_cakes[a].put_cake_to_table(cakes[index[0]][index[1]]);
-                    cakes[index[0]][index[1]].mix(cakes, index[0], index[1]);
+                    new_cakes[a].put_cake_to_table(cakes, index[0], index[1]);
                 }
             });
         }
